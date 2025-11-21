@@ -9,3 +9,9 @@ mod error_formatter;
 pub mod events;
 mod productinfo;
 mod shell_factory;
+
+/// Embedded shell entry point.
+pub mod embedded;
+
+pub use brush_builtins;
+pub use brush_core;
