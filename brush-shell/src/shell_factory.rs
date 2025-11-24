@@ -50,20 +50,20 @@ pub(crate) struct ReedlineShellFactory;
 
 #[allow(unused_variables, reason = "options are not used on all platforms")]
 impl ShellFactory for ReedlineShellFactory {
-    #[cfg(all(feature = "reedline", any(unix, windows)))]
+    #[cfg(feature = "reedline")]
     type ShellType = brush_interactive::ReedlineShell;
-    #[cfg(any(not(feature = "reedline"), not(any(unix, windows))))]
+    #[cfg(not(feature = "reedline"))]
     type ShellType = StubShell;
 
     async fn create(
         &self,
         options: brush_interactive::Options,
     ) -> Result<Self::ShellType, brush_interactive::ShellError> {
-        #[cfg(all(feature = "reedline", any(unix, windows)))]
+        #[cfg(feature = "reedline")]
         {
             brush_interactive::ReedlineShell::new(options).await
         }
-        #[cfg(any(not(feature = "reedline"), not(any(unix, windows))))]
+        #[cfg(not(feature = "reedline"))]
         {
             Err(brush_interactive::ShellError::InputBackendNotSupported)
         }

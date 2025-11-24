@@ -6,9 +6,12 @@ pub(crate) struct ReedlineValidator {
 
 impl reedline::Validator for ReedlineValidator {
     fn validate(&self, line: &str) -> reedline::ValidationResult {
+        #[cfg(not(target_arch = "wasm32"))]
         let shell = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(self.shell.lock())
         });
+        #[cfg(target_arch = "wasm32")]
+        let shell = tokio::runtime::Handle::current().block_on(self.shell.lock());
 
         match shell.parse_string(line.to_owned()) {
             Err(brush_parser::ParseError::Tokenizing { inner, position: _ })

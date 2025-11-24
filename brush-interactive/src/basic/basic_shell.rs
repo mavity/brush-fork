@@ -104,10 +104,14 @@ impl BasicShell {
         line: &str,
         cursor: usize,
     ) -> Result<brush_core::completion::Completions, ShellError> {
+        #[cfg(not(target_arch = "wasm32"))]
         tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current()
                 .block_on(self.generate_completions_async(line, cursor))
         })
+        #[cfg(target_arch = "wasm32")]
+        tokio::runtime::Handle::current()
+            .block_on(self.generate_completions_async(line, cursor))
     }
 
     async fn generate_completions_async(

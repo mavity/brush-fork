@@ -17,11 +17,16 @@ pub(crate) async fn complete_async(
     tokio::pin!(completion_future);
 
     // Wait for the completions to come back or interruption, whichever happens first.
+    #[cfg(not(target_arch = "wasm32"))]
+    let mut ctrl_c_future = Box::pin(tokio::signal::ctrl_c());
+    #[cfg(target_arch = "wasm32")]
+    let mut ctrl_c_future = Box::pin(futures::future::pending::<()>());
+
     let result = tokio::select! {
         result = &mut completion_future => {
             result
         }
-        _ = tokio::signal::ctrl_c() => {
+        _ = &mut ctrl_c_future => {
             Err(brush_core::ErrorKind::Interrupted.into())
         },
     };

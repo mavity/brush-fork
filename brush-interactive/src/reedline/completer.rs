@@ -10,9 +10,16 @@ pub(crate) struct ReedlineCompleter {
 
 impl reedline::Completer for ReedlineCompleter {
     fn complete(&mut self, line: &str, pos: usize) -> Vec<reedline::Suggestion> {
-        tokio::task::block_in_place(|| {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            tokio::task::block_in_place(|| {
+                tokio::runtime::Handle::current().block_on(self.complete_async(line, pos))
+            })
+        }
+        #[cfg(target_arch = "wasm32")]
+        {
             tokio::runtime::Handle::current().block_on(self.complete_async(line, pos))
-        })
+        }
     }
 }
 

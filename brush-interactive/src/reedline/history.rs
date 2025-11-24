@@ -6,9 +6,16 @@ pub(crate) struct ReedlineHistory {
 
 impl ReedlineHistory {
     fn lock_shell(&self) -> tokio::sync::MutexGuard<'_, brush_core::Shell> {
-        tokio::task::block_in_place(|| {
+        #[cfg(not(target_arch = "wasm32"))]
+        {
+            tokio::task::block_in_place(|| {
+                tokio::runtime::Handle::current().block_on(self.shell.lock())
+            })
+        }
+        #[cfg(target_arch = "wasm32")]
+        {
             tokio::runtime::Handle::current().block_on(self.shell.lock())
-        })
+        }
     }
 }
 

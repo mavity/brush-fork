@@ -64,6 +64,11 @@ human-panic = "2.0.4"
 brush-interactive = { version = "^0.3.0", path = "../brush-interactive", features = [
     "minimal",
 ] }
+ 
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+brush-interactive = { version = "^0.3.0", path = "../brush-interactive", features = [
+    "reedline",
+] }
 tokio = { version = "1.48.0", features = ["rt", "sync"] }
 
 [target.'cfg(any(unix, windows))'.dependencies]
@@ -71,7 +76,7 @@ brush-interactive = { version = "^0.3.0", path = "../brush-interactive", feature
     "basic",
     "reedline",
 ] }
-crossterm = "0.29.0"
+crossterm = "0.28.1"
 tokio = { version = "1.48.0", features = ["rt", "rt-multi-thread", "sync"] }
 
 [target.wasm32-unknown-unknown.dependencies]

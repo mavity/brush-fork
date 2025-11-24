@@ -78,9 +78,12 @@ pub(crate) struct ReedlineHighlighter {
 impl reedline::Highlighter for ReedlineHighlighter {
     #[expect(clippy::significant_drop_tightening)]
     fn highlight(&self, line: &str, cursor: usize) -> reedline::StyledText {
+        #[cfg(not(target_arch = "wasm32"))]
         let shell = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(self.shell.lock())
         });
+        #[cfg(target_arch = "wasm32")]
+        let shell = tokio::runtime::Handle::current().block_on(self.shell.lock());
 
         let mut styled_input = StyledInputLine::new(shell.as_ref(), line, cursor);
 

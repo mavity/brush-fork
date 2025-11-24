@@ -31,17 +31,23 @@ impl MutableEditMode {
 
 impl reedline::EditMode for MutableEditMode {
     fn parse_event(&mut self, event: reedline::ReedlineRawEvent) -> reedline::ReedlineEvent {
+        #[cfg(not(target_arch = "wasm32"))]
         let mut inner = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(self.inner.lock())
         });
+        #[cfg(target_arch = "wasm32")]
+        let mut inner = tokio::runtime::Handle::current().block_on(self.inner.lock());
 
         inner.parse_event(event)
     }
 
     fn edit_mode(&self) -> reedline::PromptEditMode {
+        #[cfg(not(target_arch = "wasm32"))]
         let inner = tokio::task::block_in_place(|| {
             tokio::runtime::Handle::current().block_on(self.inner.lock())
         });
+        #[cfg(target_arch = "wasm32")]
+        let inner = tokio::runtime::Handle::current().block_on(self.inner.lock());
 
         inner.edit_mode()
     }
