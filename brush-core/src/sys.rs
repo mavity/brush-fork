@@ -13,9 +13,13 @@ pub(crate) mod windows;
 pub(crate) use windows as platform;
 
 #[cfg(target_family = "wasm")]
+#[path = "sys/wasm_shim.rs"]
 pub(crate) mod wasm;
 #[cfg(target_family = "wasm")]
 pub(crate) use wasm as platform;
+
+// When testing the wasm shim on a native host, make the `wasm` module public
+// so integration tests can access it.
 
 #[cfg(not(unix))]
 pub(crate) mod stubs;
