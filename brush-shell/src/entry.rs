@@ -343,7 +343,7 @@ fn new_error_formatter(
 }
 
 fn get_default_input_backend() -> InputBackend {
-    #[cfg(any(unix, windows))]
+    #[cfg(any(unix, windows, target_family = "wasm"))]
     {
         // If stdin isn't a terminal, then `reedline` doesn't do the right thing
         // (reference: https://github.com/nushell/reedline/issues/509). Switch to
@@ -354,7 +354,7 @@ fn get_default_input_backend() -> InputBackend {
             InputBackend::Minimal
         }
     }
-    #[cfg(not(any(unix, windows)))]
+    #[cfg(not(any(unix, windows, target_family = "wasm")))]
     {
         InputBackend::Minimal
     }
